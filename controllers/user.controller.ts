@@ -4,6 +4,7 @@ import userModel,{IUser} from "../models/user_model";
 import jwt, { Secret } from "jsonwebtoken";
 import ejs from "ejs";
 import path from "path";
+import sendEmail from "../utils/sendMail";
 require("dotenv").config();
 
 const ErrorHandler = require("../utils/ErrorHandler");
@@ -37,7 +38,23 @@ export const registerationUser = asyncHandler(async(req:Request,res:Response,nex
         const data = {
             user:{name:user.name,activationCode}
         }
-        const html = await ejs.renderFile(path.join(__dirname,""))
+        const html = await ejs.renderFile(path.join(__dirname,"../mails/activation-mail.ejs"),data);
+        try {
+            await sendEmail({
+                email:user.email,
+                subject:"Activate your account",
+                template:"activation-mail.ejs",
+                data,
+            })
+            res.status(201).json({
+                success:true,
+                message:"Registration Successfull! Please check your email to activate your account",
+                activationToken:activationToken.token,
+
+            })
+        } catch (error:any) {
+            throw new ErrorHandler(error.message,400);
+        }
     } catch (error) {
         throw new ErrorHandler("Registration failed",400);
     }

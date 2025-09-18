@@ -1,7 +1,11 @@
 import express,{Request,Response,NextFunction} from "express";
 import cors from "cors"
 import cookieParser from "cookie-parser"
+import userRouter from "./routes/user.routes";
+
 export const app = express();
+const ErrorHandler = require("../middleware/error");
+
 
 app.use(express.json({
     limit:"50mb"
@@ -12,6 +16,9 @@ app.use(cors({
     origin: "*",
     credentials: true
 }))
+//routes
+
+app.use("/api/v1",userRouter)
 
 //health check Route
 
@@ -41,3 +48,5 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
     stack: process.env.NODE_ENV === "production" ? undefined : err.stack,
   });
 });
+
+app.use(ErrorHandler);
