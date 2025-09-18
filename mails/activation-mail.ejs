@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LearnSphere | Activation Code</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f5f7fa;
+      }
+      .container {
+        max-width: 600px;
+        margin: 40px auto;
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.07);
+        overflow: hidden;
+      }
+      .header {
+        background: linear-gradient(135deg, #4f46e5, #6366f1);
+        color: #ffffff;
+        text-align: center;
+        padding: 30px 20px;
+      }
+      .header h1 {
+        margin: 0;
+        font-size: 28px;
+        font-weight: 700;
+      }
+      .body {
+        padding: 30px 25px;
+        color: #333333;
+        line-height: 1.6;
+        font-size: 15px;
+      }
+      .activation-box {
+        margin: 25px 0;
+        text-align: center;
+      }
+      .code {
+        display: inline-block;
+        background: #f3f4f6;
+        color: #111827;
+        font-size: 22px;
+        letter-spacing: 4px;
+        font-weight: bold;
+        padding: 15px 25px;
+        border-radius: 8px;
+        border: 2px dashed #4f46e5;
+      }
+      .footer {
+        background: #f9fafb;
+        text-align: center;
+        font-size: 13px;
+        color: #6b7280;
+        padding: 20px 15px;
+      }
+      .footer a {
+        color: #4f46e5;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Header -->
+      <div class="header">
+        <h1>Welcome to LearnSphere</h1>
+      </div>
+
+      <!-- Body -->
+      <div class="body">
+        <p>Hello <%= userName %>,</p>
+        <p>
+          Thank you for joining <strong>LearnSphere</strong>, your personalized
+          learning hub. To activate your account and start your journey, please
+          use the activation code below:
+        </p>
+
+        <div class="activation-box">
+          <div class="code"><%= activationCode %></div>
+        </div>
+
+        <p>
+          Enter this code on the activation page to verify your email and unlock
+          your courses.
+        </p>
+
+        <p>
+          If you didn’t sign up for LearnSphere, you can safely ignore this
+          email.
+        </p>
+
+        <p>Happy learning, <br />The LearnSphere Team</p>
+      </div>
+
+      <!-- Footer -->
+      <div class="footer">
+        <p>&copy; <%= new Date().getFullYear() %> LearnSphere. All rights reserved.</p>
+      </div>
+    </div>
+  </body>
+</html>

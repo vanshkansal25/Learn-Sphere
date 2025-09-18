@@ -1,0 +1,56 @@
+import { Request,Response,NextFunction } from "express";
+import asyncHandler from "../middleware/catchAsyncError";
+import userModel,{IUser} from "../models/user_model";
+import jwt, { Secret } from "jsonwebtoken";
+import ejs from "ejs";
+import path from "path";
+require("dotenv").config();
+
+const ErrorHandler = require("../utils/ErrorHandler");
+
+interface IRegistrationBody{
+    name:string;
+    email:string;
+    password:string;
+    avatar?:string;
+}
+interface IActivationToken{
+    token:string;
+    activationCode:string;
+}
+export const registerationUser = asyncHandler(async(req:Request,res:Response,next:NextFunction)=>{
+    try {
+        const {name,email,password} = req.body;
+        const isEmailExist = await userModel.findOne({email});
+        if(isEmailExist){
+            throw new ErrorHandler("Email already exist",400);
+        }
+
+        const user:IRegistrationBody = 
+        {
+            name,
+            email,
+            password,
+        }
+        const activationToken = createActivationToken(user);
+        const activationCode = activationToken.activationCode;
+        const data = {
+            user:{name:user.name,activationCode}
+        }
+        const html = await ejs.renderFile(path.join(__dirname,""))
+    } catch (error) {
+        throw new ErrorHandler("Registration failed",400);
+    }
+});
+// To generate OTP
+export const createActivationToken = (user:any) : IActivationToken =>{
+    const activationCode = Math.floor(1000 + Math.random()*9000).toString();
+    const token = jwt.sign({
+        user,activationCode
+    },process.env.ACTIVATION_SECRET as Secret,{
+        expiresIn:"5m"
+    });
+
+    return {token,activationCode};
+
+}
