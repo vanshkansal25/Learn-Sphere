@@ -19,6 +19,11 @@ interface IActivationToken{
     token:string;
     activationCode:string;
 }
+interface IActivationRequest{
+    activation_token:string;
+    activation_code:string;
+}
+
 export const registerationUser = asyncHandler(async(req:Request,res:Response,next:NextFunction)=>{
     try {
         const {name,email,password} = req.body;
@@ -71,3 +76,31 @@ export const createActivationToken = (user:any) : IActivationToken =>{
     return {token,activationCode};
 
 }
+
+export const activateUser = asyncHandler(async(req:Request, res:Response,next:NextFunction)=>{
+    try {
+        const {activation_token,activation_code} = req.body as IActivationRequest;
+        const newUser:{user:IUser;activationCode:string} = jwt.verify(activation_token,process.env.ACTIVATION_SECRET as string) as {user:IUser;activationCode:string};
+        if(newUser.activationCode !== activation_code){
+            throw new ErrorHandler("Invalid activation code",400);
+        }
+        const {name,email,password} = newUser.user;
+        const existuser = await userModel.findOne({email});
+
+        if(existuser){
+            throw new ErrorHandler("Email already exist",400);
+        }
+        const user = await userModel.create({
+            name,email,password
+        })
+
+        res.status(201).json({
+            success:true,
+            message:"Account activated successfully",
+        })
+
+
+    } catch (error:any) {
+        throw new ErrorHandler(error.message,400);
+    }
+})
