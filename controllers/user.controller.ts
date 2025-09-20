@@ -5,6 +5,8 @@ import jwt, { Secret } from "jsonwebtoken";
 import ejs from "ejs";
 import path from "path";
 import sendEmail from "../utils/sendMail";
+import { sendToken } from "../utils/jwt";
+import { redis } from "../utils/redis";
 require("dotenv").config();
 
 const ErrorHandler = require("../utils/ErrorHandler");
@@ -123,7 +125,23 @@ export const loginUser = asyncHandler(async(req:Request, res:Response,next:NextF
         if(!isPasswordMatch){
             throw new ErrorHandler("Invalid email or password",400);
         }
-        
+
+        sendToken(user,200,res);
+
+    } catch (error:any) {
+        throw new ErrorHandler(error.message,400);
+    }
+})
+
+export const logoutUser = asyncHandler(async(req:Request,res:Response,next:NextFunction)=>{
+    try {
+        res.clearCookie("accessToken");
+        res.clearCookie("refreshToken");
+        res.status(200).json({
+            success:true,
+            message:"Logged out successfully"
+        })
+        redis.del(req.user?._id||'' as any)
     } catch (error:any) {
         throw new ErrorHandler(error.message,400);
     }
