@@ -23,6 +23,10 @@ interface IActivationRequest{
     activation_token:string;
     activation_code:string;
 }
+interface ILoginRequest{
+    email:string;
+    password:string;
+}
 
 export const registerationUser = asyncHandler(async(req:Request,res:Response,next:NextFunction)=>{
     try {
@@ -100,6 +104,26 @@ export const activateUser = asyncHandler(async(req:Request, res:Response,next:Ne
         })
 
 
+    } catch (error:any) {
+        throw new ErrorHandler(error.message,400);
+    }
+})
+
+export const loginUser = asyncHandler(async(req:Request, res:Response,next:NextFunction)=>{
+    try {
+        const {email,password} = req.body as ILoginRequest;
+        if(!email || !password){
+            throw new ErrorHandler("Please provide email and password",400);
+        }
+        const user = await userModel.findOne({email}).select("+password");
+        if(!user){
+            throw new ErrorHandler("Invalid email or password",400);
+        }
+        const isPasswordMatch = await user.comparePassword(password);
+        if(!isPasswordMatch){
+            throw new ErrorHandler("Invalid email or password",400);
+        }
+        
     } catch (error:any) {
         throw new ErrorHandler(error.message,400);
     }
