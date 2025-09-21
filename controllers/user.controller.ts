@@ -250,3 +250,36 @@ export const updateUserInfo = asyncHandler(async(req:Request,res:Response,next:N
     }
 })
 
+interface IUpdatePassword{
+    oldPassword:string;
+    newPassword:string;
+}
+
+export const  updatePassword = asyncHandler(async(req:Request,res:Response,next:NextFunction)=>{
+    try {
+        const {oldPassword,newPassword} = req.body as IUpdatePassword;
+        if(!oldPassword || !newPassword){
+            throw new ErrorHandler("Please provide old and new password",400);
+        }
+        const user = await userModel.findById(req.user?._id).select("+password");
+        // IN case user used social auth
+        if(user?.password === undefined){
+            throw new ErrorHandler("Invalid User",400)
+        }
+
+        const isPasswordMatch = await user?.comparePassword(oldPassword);
+        if(!isPasswordMatch){
+            throw new ErrorHandler("Invalid Password",400);
+        }
+        user.password = newPassword;
+        await user.save();
+        await redis.set(req.user?._id as string,JSON.stringify(user))
+        res.status(201).json({
+            success:true,
+            user,
+        })
+    } catch (error:any) {
+        throw new ErrorHandler(error.message,400);
+    }
+}
+)
