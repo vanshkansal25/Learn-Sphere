@@ -10,6 +10,23 @@ interface ITokenOptions{
     sameSite:'lax'|'strict'|'none'|undefined;
     secure ?: boolean;
 }
+    export const accessTokenExpire = parseInt(process.env.ACCESS_TOKEN_EXPIRY || '300',10)
+    export const refreshTokenExpire = parseInt(process.env.REFRESH_TOKEN_EXPIRY || '900',10)
+
+
+    export const accessTokenOptions : ITokenOptions = {
+        expires:new Date(Date.now() + accessTokenExpire * 60 * 60 * 1000), // 5 minutes
+        maxAge:accessTokenExpire * 60 * 60 *1000,
+        httpOnly:true,
+        sameSite:'lax',
+
+    }
+    export const refreshTokenOptions : ITokenOptions = {
+        expires:new Date(Date.now() + refreshTokenExpire * 24 * 60 * 60 * 1000),
+        maxAge:refreshTokenExpire * 24 * 60 * 60 * 1000,
+        httpOnly:true,
+        sameSite:'lax',
+    }
 
 export const sendToken = (user:IUser,statusCode:number,res:Response)=>{
     const accessToken = user.SignAccessToken();
@@ -17,23 +34,7 @@ export const sendToken = (user:IUser,statusCode:number,res:Response)=>{
     // upload session in redis
     redis.set(String(user._id),JSON.stringify(user) as any)
     // parse env variable to integrates from fallback value
-    const accessTokenExpire = parseInt(process.env.ACCESS_TOKEN_EXPIRY || '300',10)
-    const refreshTokenExpire = parseInt(process.env.REFRESH_TOKEN_EXPIRY || '900',10)
-
-
-    const accessTokenOptions : ITokenOptions = {
-        expires:new Date(Date.now() + accessTokenExpire * 60 * 1000), // 5 minutes
-        maxAge:accessTokenExpire * 1000,
-        httpOnly:true,
-        sameSite:'lax',
-
-    }
-    const refreshTokenOptions : ITokenOptions = {
-        expires:new Date(Date.now() + refreshTokenExpire * 60 * 1000), // 5 minutes
-        maxAge:refreshTokenExpire * 1000,
-        httpOnly:true,
-        sameSite:'lax',
-    }
+    
     if(process.env.NODE_ENV === 'production'){
         accessTokenOptions.secure = true;
         refreshTokenOptions.secure = true;

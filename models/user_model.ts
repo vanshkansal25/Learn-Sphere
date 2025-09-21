@@ -80,7 +80,10 @@ userSchema.methods.SignAccessToken = function(){
         {
             _id:this._id
         },
-        process.env.ACCESS_TOKEN as string || ''
+        process.env.ACCESS_TOKEN as string || '',
+        {
+            expiresIn:"5m",
+        }
     )
 }
 userSchema.methods.SignRefreshToken = function(){
@@ -89,6 +92,9 @@ userSchema.methods.SignRefreshToken = function(){
             _id : this._id
         },
         process.env.REFRESH_TOKEN || '',
+        {
+            expiresIn:"7D",
+        } 
     )
 }
 

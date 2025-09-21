@@ -1,11 +1,11 @@
 import { Request,Response,NextFunction } from "express";
 import asyncHandler from "../middleware/catchAsyncError";
 import userModel,{IUser} from "../models/user_model";
-import jwt, { Secret } from "jsonwebtoken";
+import jwt, { JwtPayload, Secret } from "jsonwebtoken";
 import ejs from "ejs";
 import path from "path";
 import sendEmail from "../utils/sendMail";
-import { sendToken } from "../utils/jwt";
+import { accessTokenOptions, refreshTokenOptions, sendToken } from "../utils/jwt";
 import { redis } from "../utils/redis";
 require("dotenv").config();
 
@@ -144,5 +144,38 @@ export const logoutUser = asyncHandler(async(req:Request,res:Response,next:NextF
         redis.del(req.user?._id||'' as any)
     } catch (error:any) {
         throw new ErrorHandler(error.message,400);
+    }
+})
+
+// update access token
+
+export const updateAccessToken = asyncHandler(async(req:Request,res:Response,next:NextFunction)=>{
+    try {
+        const refresh_token = req.cookies.refresh_token as string;
+        const decoded = jwt.verify(refresh_token,process.env.REFRESH_TOKEN as string) as JwtPayload;
+        if(!decoded){
+            throw new ErrorHandler("Invalid refresh token",400);
+        }
+        const session = await redis.get(decoded.id as string);
+        if(!session){
+            throw new ErrorHandler("Session expired,Login again",400);
+        }
+        const user  = JSON.parse(session);
+        const accessToken = jwt.sign({id:user._id},process.env.ACCESS_TOKEN as string,{
+            expiresIn:"5m"
+        });
+        const refreshToken = jwt.sign({id:user._id},process.env.REFRESH_TOKEN as string,{
+            expiresIn:"3d"
+        });
+
+        res.cookie("access_token",accessToken,accessTokenOptions)
+        res.cookie("refresh_token",refreshToken,refreshTokenOptions)
+
+        res.status(200).json({
+            success:true,
+            accessToken
+        })
+    } catch (error) {
+        
     }
 })
