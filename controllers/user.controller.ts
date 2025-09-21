@@ -7,6 +7,7 @@ import path from "path";
 import sendEmail from "../utils/sendMail";
 import { accessTokenOptions, refreshTokenOptions, sendToken } from "../utils/jwt";
 import { redis } from "../utils/redis";
+import { getUserById } from "../services/user.services";
 require("dotenv").config();
 
 const ErrorHandler = require("../utils/ErrorHandler");
@@ -175,7 +176,42 @@ export const updateAccessToken = asyncHandler(async(req:Request,res:Response,nex
             success:true,
             accessToken
         })
-    } catch (error) {
-        
+    } catch (error:any) {
+        throw new ErrorHandler(error.message,400);
+    }
+})
+
+export const getUserInfo = asyncHandler(async(req:Request,res:Response,next:NextFunction)=>{
+    try {
+        const userId = req.user?._id as string;
+        if(!userId){
+            throw new ErrorHandler("User not found",404);
+        }
+        getUserById(userId,res)
+    } catch (error:any) {
+        throw new ErrorHandler(error.message,400);
+    }
+})
+
+interface ISocialAuth{
+    name:string;
+    email:string;
+    avatar?:string;
+}
+// social auth - we will send data from frontend to backend and backend will create a new user or login the user and send the token to frontend
+export const socialAuth = asyncHandler(async(req:Request,res:Response,next:NextFunction)=>{
+    try {
+        const {name,email,avatar} = req.body as ISocialAuth;
+        const user = await userModel.findOne({email});
+        if(!user){
+            const newUser = await userModel.create({
+                name,email,avatar
+            })
+            sendToken(newUser,200,res)
+        }else{
+            sendToken(user,200,res)
+        }
+    } catch (error:any) {
+        throw new ErrorHandler(error.message,400);
     }
 })
