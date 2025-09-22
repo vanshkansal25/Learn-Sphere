@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import asyncHandler from "../middleware/catchAsyncError";
-import userModel, { IUser } from "../models/user_model";
+import userModel, { IUser } from "../models/user.model";
 import jwt, { JwtPayload, Secret } from "jsonwebtoken";
 import ejs from "ejs";
 import path from "path";
