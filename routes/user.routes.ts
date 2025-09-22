@@ -9,7 +9,8 @@ import {
     getUserInfo,
     socialAuth,
     updateUserInfo,
-    updatePassword} from "../controllers/user.controller";
+    updatePassword,
+    updateProfilePicture} from "../controllers/user.controller";
 import { isAuthenticated } from "../middleware/auth";
 const userRouter = express.Router();
 
@@ -22,6 +23,7 @@ userRouter.post("/login",loginUser);
 userRouter.post("/socialAuth",socialAuth);
 userRouter.put("/update-user-info",isAuthenticated,updateUserInfo);
 userRouter.put("/update-user-password",isAuthenticated,updatePassword);
+userRouter.put("/update-avatar",isAuthenticated,updateProfilePicture);
 
 
 
