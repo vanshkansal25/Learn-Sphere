@@ -5,6 +5,7 @@ import cloudinary from "cloudinary";
 import { createCourse } from "../services/course.services";
 import courseModel from "../models/course.model";
 import { triggerAsyncId } from "async_hooks";
+import { redis } from "../utils/redis";
 
 
 export const uploadCourse = asyncHandler(async(req:Request,res:Response,next:NextFunction)=>{
@@ -60,11 +61,24 @@ export const editCourse = asyncHandler(async(req:Request,res:Response,next:NextF
 
 export const getSingleCourse = asyncHandler(async(req:Request,res:Response,next:NextFunction)=>{
     try {
-        const course = await courseModel.findById(req.params.id).select("-courseData.videoUrl -courseData.suggestions -courseData.questions -courseData.links");
-        res.status(200).json({
-            success:true,
-            course
-        })
+        const courseId = req.params.id;
+        const isCacheExist = await redis.get(courseId);
+        if(isCacheExist){
+            const course = JSON.parse(isCacheExist);
+            res.status(200).json({
+                success:true,
+                course
+            })
+        }else{
+            const course = await courseModel.findById(req.params.id).select("-courseData.videoUrl -courseData.suggestions -courseData.questions -courseData.links");
+            await redis.set(courseId,JSON.stringify(course));
+            res.status(200).json({
+                success:true,
+                course
+            })
+        }
+        
+
 
     } catch (error: any) {
       throw new ErrorHandler(error.message, 400);
@@ -73,6 +87,21 @@ export const getSingleCourse = asyncHandler(async(req:Request,res:Response,next:
 
 export const getAllCourses = asyncHandler(async(req:Request,res:Response,next:NextFunction)=>{
     try {
+        const isCacheExist = await redis.get("allCourses");
+        if(isCacheExist){
+            const courses = JSON.parse(isCacheExist);
+            res.status(200).json({
+                success:true,
+                courses
+            })
+        }else{
+            const courses = await courseModel.find().select("-courseData.videoUrl -courseData.suggestions -courseData.questions -courseData.links");
+            await redis.set("allCourses",JSON.stringify(courses));
+            res.status(200).json({
+                success:true,
+                courses
+            })
+        }
         const courses = await courseModel.find().select("-courseData.videoUrl -courseData.suggestions -courseData.questions -courseData.links");
         res.status(200).json({
             success:true,
