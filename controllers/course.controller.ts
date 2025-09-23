@@ -4,6 +4,7 @@ const ErrorHandler = require("../utils/ErrorHandler");
 import cloudinary from "cloudinary";
 import { createCourse } from "../services/course.services";
 import courseModel from "../models/course.model";
+import { triggerAsyncId } from "async_hooks";
 
 
 export const uploadCourse = asyncHandler(async(req:Request,res:Response,next:NextFunction)=>{
@@ -51,6 +52,31 @@ export const editCourse = asyncHandler(async(req:Request,res:Response,next:NextF
         res.status(200).json({
             success:true,
             course
+        })
+    } catch (error: any) {
+      throw new ErrorHandler(error.message, 400);
+    }
+})
+
+export const getSingleCourse = asyncHandler(async(req:Request,res:Response,next:NextFunction)=>{
+    try {
+        const course = await courseModel.findById(req.params.id).select("-courseData.videoUrl -courseData.suggestions -courseData.questions -courseData.links");
+        res.status(200).json({
+            success:true,
+            course
+        })
+
+    } catch (error: any) {
+      throw new ErrorHandler(error.message, 400);
+    }
+})
+
+export const getAllCourses = asyncHandler(async(req:Request,res:Response,next:NextFunction)=>{
+    try {
+        const courses = await courseModel.find().select("-courseData.videoUrl -courseData.suggestions -courseData.questions -courseData.links");
+        res.status(200).json({
+            success:true,
+            courses
         })
     } catch (error: any) {
       throw new ErrorHandler(error.message, 400);
