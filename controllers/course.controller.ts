@@ -111,3 +111,26 @@ export const getAllCourses = asyncHandler(async(req:Request,res:Response,next:Ne
       throw new ErrorHandler(error.message, 400);
     }
 })
+//get course content == for valid user(who purchased it)
+
+export const getCourseByUser = asyncHandler(async(req:Request,res:Response,next:NextFunction)=>{
+    try {
+        const userCourseList = req.user?.courses;
+        const courseId = req.params.id;
+        const courseExist = userCourseList?.find((course)=>{
+            return course.toString() === courseId;
+        })
+        if(courseExist){
+            throw new ErrorHandler("You are not elegible to access this course", 404);
+        }
+        const course = await courseModel.findById(courseId);
+
+        const content = course?.courseData;
+        res.status(200).json({
+            success:true,
+            content
+        })
+    } catch (error: any) {
+      throw new ErrorHandler(error.message, 400);
+    }
+})
