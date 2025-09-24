@@ -236,7 +236,47 @@ export const addAnswer = asyncHandler(async(req:Request,res:Response,next:NextFu
 
 interface IReviewData{
     review:string,
-    courseId:string,
     rating:number,
     userId:string
 }
+
+export const addReview = asyncHandler(async(req:Request,res:Response,next:NextFunction)=>{
+    try {
+        const userCourseList = req.user?.courses;
+        const courseId = req.params.id;
+        const courseExist = userCourseList?.some((course:any)=>{course._id.toString() === courseId.toString()})
+        if(!courseExist){
+            throw new ErrorHandler("You are not eligible to access this course", 400);
+        }
+        const course = await courseModel.findById(courseId);
+        const {review,rating} = req.body as IReviewData;
+        const reviewData:any = {
+            user:req.user,
+            comment:review,
+            rating,
+        }
+        course?.reviews.push(reviewData);
+
+        let avg = 0;
+        course?.reviews.forEach((rev:any)=>{
+            avg == rev.rating;
+        })
+        if(course){
+            course.ratings = avg / course.reviews.length;
+        }
+        await course?.save();
+        const notification = {
+            title:"New Review Recieved",
+            message:`${req.user?.name} has given a review on ${course?.title} `
+        }
+        //create notification
+        res.status(200).json({
+            success:true,
+            course
+        })
+
+
+    } catch (error: any) {
+      throw new ErrorHandler(error.message, 400);
+    }
+})
