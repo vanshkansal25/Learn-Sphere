@@ -4,7 +4,6 @@ const ErrorHandler = require("../utils/ErrorHandler");
 import cloudinary from "cloudinary";
 import { createCourse } from "../services/course.services";
 import courseModel from "../models/course.model";
-import { triggerAsyncId } from "async_hooks";
 import { redis } from "../utils/redis";
 import mongoose from "mongoose";
 import ejs from "ejs";

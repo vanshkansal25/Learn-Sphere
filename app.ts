@@ -2,7 +2,7 @@ import express,{Request,Response,NextFunction} from "express";
 import cors from "cors"
 import cookieParser from "cookie-parser"
 import userRouter from "./routes/user.routes";
-
+import courseRouter from "./routes/course.routes";
 export const app = express();
 const ErrorHandler = require("../middleware/error");
 
@@ -19,6 +19,7 @@ app.use(cors({
 //routes
 
 app.use("/api/v1",userRouter)
+app.use("/api/v1",courseRouter)
 
 //health check Route
 
