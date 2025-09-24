@@ -280,3 +280,38 @@ export const addReview = asyncHandler(async(req:Request,res:Response,next:NextFu
       throw new ErrorHandler(error.message, 400);
     }
 })
+// add reply in review
+interface IAddReviewData{
+    comment:string;
+    courseId:string;
+    reviewId:string
+}
+export const addReplytoReview = asyncHandler(async(req:Request,res:Response,next:NextFunction)=>{
+    try {
+        const {comment,courseId,reviewId} = req.body as IAddReviewData;
+        const course = await courseModel.findById(courseId)
+        if(!course){
+            throw new ErrorHandler("Course not found", 400);
+        }
+        const review = course?.reviews?.find((rev:any)=>{rev._id.toString() === reviewId})
+        if(!review){
+            throw new ErrorHandler("Review not found", 400);
+        }
+        const replyData:any={
+            user:req.user,
+            comment
+        };
+        if(!review.commentReplies){
+            review.commentReplies = [];
+        }
+        review.commentReplies?.push(replyData);
+        await course?.save();
+        res.status(200).json({
+            success:true,
+            course
+        })
+    } catch (error: any) {
+      throw new ErrorHandler(error.message, 400);
+    }
+})
+
