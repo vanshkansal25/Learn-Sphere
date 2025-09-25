@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Order Confirmation - LearnSphere</title>
+</head>
+<body style="font-family: Arial, sans-serif; background: #ffffff; color: #333333; padding: 20px;">
+  <h2 style="color:#4F46E5;">✅ Order Confirmed</h2>
+
+  <p>
+    Thank you for your purchase! Your order has been successfully placed on 
+    <strong>LearnSphere</strong>.
+  </p>
+
+  <h3 style="margin-top: 25px;">Order Summary</h3>
+  <table style="width:100%; border-collapse: collapse; margin-top:10px;">
+    <tr>
+      <td style="padding:8px; border-bottom:1px solid #eee;">Order ID</td>
+      <td style="padding:8px; border-bottom:1px solid #eee;"><%= order._id %></td>
+    </tr>
+    <tr>
+      <td style="padding:8px; border-bottom:1px solid #eee;">Course</td>
+      <td style="padding:8px; border-bottom:1px solid #eee;"><%= order.name %></td>
+    </tr>
+    <tr>
+      <td style="padding:8px; border-bottom:1px solid #eee;">Price</td>
+      <td style="padding:8px; border-bottom:1px solid #eee;">$<%= order.price %></td>
+    </tr>
+    <tr>
+      <td style="padding:8px; border-bottom:1px solid #eee;">Date</td>
+      <td style="padding:8px; border-bottom:1px solid #eee;"><%= order.date %></td>
+    </tr>
+  </table>
+
+  <p style="margin-top: 20px;">
+    You now have full access to your course. Start learning anytime from your LearnSphere dashboard. 🚀
+  </p>
+
+  <p style="margin-top: 30px; font-size: 12px; color: #888888;">
+    — The LearnSphere Team  
+    <br>
+    © <%= new Date().getFullYear() %> LearnSphere. All rights reserved.
+  </p>
+</body>
+</html>

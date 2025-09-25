@@ -2,6 +2,7 @@ import express,{Request,Response,NextFunction} from "express";
 import cors from "cors"
 import cookieParser from "cookie-parser"
 import userRouter from "./routes/user.routes";
+import orderRouter from "./routes/order.routes";
 import courseRouter from "./routes/course.routes";
 export const app = express();
 const ErrorHandler = require("../middleware/error");
@@ -20,6 +21,8 @@ app.use(cors({
 
 app.use("/api/v1",userRouter)
 app.use("/api/v1",courseRouter)
+app.use("/api/v1",orderRouter)
+
 
 //health check Route
 
