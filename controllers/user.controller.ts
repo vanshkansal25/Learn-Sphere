@@ -11,7 +11,7 @@ import {
   sendToken,
 } from "../utils/jwt";
 import { redis } from "../utils/redis";
-import { getUserById } from "../services/user.services";
+import { getAllUsers, getUserById } from "../services/user.services";
 import cloudinary from "cloudinary";
 require("dotenv").config();
 
@@ -371,3 +371,12 @@ export const updateProfilePicture = asyncHandler(
     }
   }
 );
+//only for admin
+export const getAllUsersAdmin = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      getAllUsers(res);
+    } catch (error: any) {
+      throw new ErrorHandler(error.message, 400);
+    }
+  })

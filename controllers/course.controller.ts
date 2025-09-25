@@ -2,13 +2,14 @@ import { Request,Response,NextFunction } from "express";
 import asyncHandler from "../middleware/catchAsyncError";
 const ErrorHandler = require("../utils/ErrorHandler");
 import cloudinary from "cloudinary";
-import { createCourse } from "../services/course.services";
+import { createCourse, getAllCoursesadmin } from "../services/course.services";
 import courseModel from "../models/course.model";
 import { redis } from "../utils/redis";
 import mongoose from "mongoose";
 import ejs from "ejs";
 import path from "path";
 import sendEmail from "../utils/sendMail";
+import NotificationModel from "../models/notification.model";
 
 
 export const uploadCourse = asyncHandler(async(req:Request,res:Response,next:NextFunction)=>{
@@ -162,6 +163,12 @@ export const addQuestion = asyncHandler(async(req:Request,res:Response,next:Next
         }
         courseContent.questions.push(newQuestion)
 
+        await NotificationModel.create({
+                    user:req.user?._id,
+                    title:"New Question",
+                    message:`You have a new question for ${courseContent.title}`
+                })
+
         await course?.save();
         res.status(200).json({
             success:true,
@@ -204,7 +211,11 @@ export const addAnswer = asyncHandler(async(req:Request,res:Response,next:NextFu
         await course?.save();
 
         if(req.user?._id === question.user._id){
-            // create a notification
+            await NotificationModel.create({
+                    user:req.user?._id,
+                    title:"New Question Reply Recieved",
+                    message:`You have a new reply for ${courseContent.title}`
+                })
         }else{
             const data = {
                 name:question.user.name,
@@ -313,4 +324,14 @@ export const addReplytoReview = asyncHandler(async(req:Request,res:Response,next
       throw new ErrorHandler(error.message, 400);
     }
 })
+
+
+export const getAllCoursesAdmin = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      getAllCoursesadmin(res);
+    } catch (error: any) {
+      throw new ErrorHandler(error.message, 400);
+    }
+  })
 

@@ -11,3 +11,11 @@ export const createCourse = asyncHandler(async(data:any,res:Response)=>{
         course 
     })
 })
+
+export const getAllCoursesadmin = async(res:Response)=>{
+    const users = await courseModel.find().sort({createdAt:-1})
+    res.status(201).json({
+        success:true,
+        users
+    }) 
+}

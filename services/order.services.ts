@@ -11,3 +11,10 @@ export const newOrder = asyncHandler(async(data:any,res:Response,next:NextFuncti
             order
         })
 })
+export const getAllOrders = async(res:Response)=>{
+    const users = await OrderModel.find().sort({createdAt:-1})
+    res.status(201).json({
+        success:true,
+        users
+    }) 
+}
