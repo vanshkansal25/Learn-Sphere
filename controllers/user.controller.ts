@@ -11,7 +11,7 @@ import {
   sendToken,
 } from "../utils/jwt";
 import { redis } from "../utils/redis";
-import { getAllUsers, getUserById } from "../services/user.services";
+import { getAllUsers, getUserById, updateUserRoleService } from "../services/user.services";
 import cloudinary from "cloudinary";
 require("dotenv").config();
 
@@ -376,6 +376,17 @@ export const getAllUsersAdmin = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       getAllUsers(res);
+    } catch (error: any) {
+      throw new ErrorHandler(error.message, 400);
+    }
+  })
+
+// update user role -- can only be done by admin
+export const updateUserRole = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const {id,role} = req.body;
+      updateUserRoleService(res,id,role)
     } catch (error: any) {
       throw new ErrorHandler(error.message, 400);
     }
