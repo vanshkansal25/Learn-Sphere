@@ -5,6 +5,7 @@ import userRouter from "./routes/user.routes";
 import orderRouter from "./routes/order.routes";
 import courseRouter from "./routes/course.routes";
 import notificationRouter from "./routes/notification.routes";
+import analyticsRouter from "./routes/analytics.routes";
 export const app = express();
 const ErrorHandler = require("../middleware/error");
 
@@ -24,6 +25,8 @@ app.use("/api/v1",userRouter)
 app.use("/api/v1",courseRouter)
 app.use("/api/v1",orderRouter)
 app.use("/api/v1",notificationRouter)
+app.use("/api/v1",analyticsRouter)
+
 
 
 //health check Route
