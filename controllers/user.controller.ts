@@ -205,7 +205,7 @@ export const updateAccessToken = asyncHandler(
       req.user = user;
       res.cookie("access_token", accessToken, accessTokenOptions);
       res.cookie("refresh_token", refreshToken, refreshTokenOptions);
-
+      await redis.set(user._id,JSON.stringify(user), "EX" , 604800)
       res.status(200).json({
         success: true,
         accessToken,
@@ -335,7 +335,7 @@ interface IUpdateProfilePicture {
 export const updateProfilePicture = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { avatar } = req.body;
+      const { avatar } = req.body as IUpdateProfilePicture ;
       const userId = req.user?._id;
       const user = await userModel.findById(userId);
       if (avatar && user) {

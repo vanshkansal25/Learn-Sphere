@@ -1,4 +1,4 @@
-import mongoose,{Document,Model,model,Schema} from "mongoose";
+import mongoose,{Document,Model,Schema} from "mongoose";
 import { IUser } from "./user.model";
 
 interface IComment extends Document{
